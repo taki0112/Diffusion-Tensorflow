@@ -4,6 +4,16 @@
   <img src="./assets/teaser.png">
 </div>
 
+## Denosing Diffusion Probabilistic Models (DDPM)
+<div align="left">
+  <img src="./assets/ddpm.png" width = '694px' height = '456px'>
+</div>
+
+## Denosing Diffusion Implicit Models (DDIM)
+<div align="left">
+  <img src="./assets/ddim.png" width = '709px' height = '405px'>
+</div>
+
 ## Usage
 ### Train DDPM
 ```
