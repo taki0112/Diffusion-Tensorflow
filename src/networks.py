@@ -1,46 +1,6 @@
 from layers import *
 from functools import partial
 from tqdm import tqdm
-from utils import adjust_dynamic_range, save_images
-
-class Inception_V3(tf.keras.Model):
-    def __init__(self, name='Inception_V3'):
-        super(Inception_V3, self).__init__(name=name)
-
-        self.inception_v3_preprocess = tf.keras.applications.inception_v3.preprocess_input
-        self.inception_v3 = tf.keras.applications.inception_v3.InceptionV3(weights='imagenet', include_top=False, pooling='avg')
-        self.inception_v3.trainable = False
-
-    def torch_normalization(self, x):
-        x /= 255.
-
-        r, g, b = tf.split(axis=-1, num_or_size_splits=3, value=x)
-
-        mean = [0.485, 0.456, 0.406]
-        std = [0.229, 0.224, 0.225]
-
-        x = tf.concat(axis=-1, values=[
-            (r - mean[0]) / std[0],
-            (g - mean[1]) / std[1],
-            (b - mean[2]) / std[2]
-        ])
-
-        return x
-
-    # @tf.function
-    def call(self, x, training=False, mask=None):
-        x = self.inception_v3(x, training=training)
-
-        return x
-
-    def inference_feat(self, x, training=False):
-        inception_real_img = adjust_dynamic_range(x, range_in=(-1.0, 1.0), range_out=(0.0, 255.0), out_dtype=tf.float32)
-        inception_real_img = tf.image.resize(inception_real_img, [299, 299], antialias=True, method=tf.image.ResizeMethod.BICUBIC)
-        inception_real_img = self.torch_normalization(inception_real_img)
-
-        inception_feat = self.inception_v3(inception_real_img, training=training)
-
-        return inception_feat
 
 class Unet(Model):
     def __init__(self,
@@ -241,27 +201,3 @@ class GaussianDiffusion(Model):
 
         x = tf.concat(noised_images + denoised_images, axis=0)
         return x
-
-if __name__ == '__main__':
-    x = tf.random.normal([4, 128, 128, 3])
-
-    model = Unet()
-    diffusion = GaussianDiffusion(image_size=128, objective='general', eta=0.5)
-    t = diffusion.sample_timesteps(n=x.shape[0])
-    print(t)
-    x_t, noise = diffusion.noise_images(x, t)
-    predict_noise = model(x_t, t)
-
-
-    # print(x_t.shape, noise.shape, predict_noise.shape)
-    #
-    # sampled_images = diffusion.sample(model, n=x.shape[0])
-    # print(sampled_images.shape)
-    # sampled_images = tf.transpose(sampled_images, perm=[0, 3, 1, 2])
-    # save_images(sampled_images, [4, 1], image_path='test.jpg')
-    #
-    # t = [2, 1, 0, 0, 1]
-    denoised_images = diffusion.sample_from_timestep(model, tf.expand_dims(x[0], axis=0), t)
-    print(denoised_images.shape)
-    save_images(denoised_images, [2, 4], image_path='test.jpg')
-    print(denoised_images.shape)
