@@ -106,7 +106,7 @@ class Unet(Model):
         return x
 
 class GaussianDiffusion(Model):
-    def __init__(self, image_size, timesteps=1, objective='ddpm', eta=1.0, beta_schedule='cosine'):
+    def __init__(self, image_size, timesteps=1000, objective='ddpm', eta=1.0, beta_schedule='cosine'):
         super(GaussianDiffusion, self).__init__()
 
         self.image_size = image_size
