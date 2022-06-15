@@ -208,7 +208,8 @@ class Diffusion():
                             image_path='./{}/sampled_{:06d}.png'.format(self.sample_dir, idx + 1))
 
                 test_t = [50, 100, 150, 200, 300, 600, 700, 999]
-                denoised_images = self.diffusion.sample_from_timestep(self.unet_ema, tf.expand_dims(x_real[0], axis=0), t)
+                x_real_concat = tf.concat(self.strategy.experimental_local_results(x_real), axis=0)
+                denoised_images = self.diffusion.sample_from_timestep(self.unet_ema, tf.expand_dims(x_real_concat[0], axis=0), test_t)
                 save_images(images=denoised_images,
                             size=[2, len(test_t)],
                             image_path='./{}/denoised_{:06d}.png'.format(self.sample_dir, idx + 1))
