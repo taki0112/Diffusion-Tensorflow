@@ -74,7 +74,7 @@ class Unet(Model):
         self.out_dim = default(out_dim, default_out_dim)
 
         self.final_conv = Sequential([
-            block_klass(dim, dim),
+            block_klass(dim * 2, dim),
             nn.Conv2D(filters=self.out_dim, kernel_size=1, strides=1)
         ])
 
@@ -102,6 +102,7 @@ class Unet(Model):
             x = attn(x)
             x = upsample(x)
 
+        x = tf.concat([x, h.pop()], axis=-1)
         x = self.final_conv(x)
         return x
 
