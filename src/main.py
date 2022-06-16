@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument('--objective', type=str, default='ddpm', help='[ddpm, ddim, general]')
     parser.add_argument('--eta', type=float, default=1.0, help='for reverse general form')
     parser.add_argument('--ema_decay', type=float, default=0.995, help='ema_decay')
-    parser.add_argument('--beta_schedule', type=str, default='cosine', help='linear or cosine')
+    parser.add_argument('--beta_schedule', type=str, default='linear', help='linear or cosine')
 
     parser.add_argument('--checkpoint_dir', type=str, default='checkpoint',
                         help='Directory name to save the checkpoints')
